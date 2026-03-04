@@ -236,9 +236,6 @@ ffc_result ffc_parse_i64(size_t len, const char *input, int base, int64_t  *out)
 ffc_result ffc_parse_u64(size_t len, const char *input, int base, uint64_t *out);
 ffc_result ffc_parse_i32(size_t len, const char *input, int base, int32_t  *out);
 ffc_result ffc_parse_u32(size_t len, const char *input, int base, uint32_t *out);
-// TODO implement more integer overloads
-// ffc_result ffc_from_chars_long(const char *start, const char *end, long* out);
-// ffc_result ffc_from_chars_int(const char *start,  const char *end, int* out);
 
 #endif // FFC_API
 
@@ -380,7 +377,7 @@ ffc_internal ffc_inline size_t ffc_get_value_size(ffc_value_kind vk) {
        (defined(__riscv) && __riscv_xlen == 32))
 #define FFC_32BIT 1
 #else
-  // Need to check incrementally, since SIZE_MAX is a size_t, avoid overflow.
+// Need to check incrementally, since SIZE_MAX is a size_t, avoid overflow.
 // We can never tell the register width, but the SIZE_MAX is a good
 // approximation. UINTPTR_MAX and INTPTR_MAX are optional, so avoid them for max
 // portability.
@@ -1556,9 +1553,9 @@ void ffc_dump_parsed(ffc_parsed const p) {
 
 // rust style `try!()` macro, or `?` operator
 #define FFC_TRY(x)                                                       \
-  {                                                                            \
-    if (!(x))                                                                  \
-      return false;                                                            \
+  {                                                                      \
+    if (!(x))                                                            \
+      return false;                                                      \
   }
 
 // the limb width: we want efficient multiplication of double the bits in
