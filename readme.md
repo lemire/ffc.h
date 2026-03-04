@@ -9,6 +9,7 @@ Example
 #include <stdio.h>
 #include <string.h>
 
+#define FFC_IMPL
 #include "ffc.h"
 
 int main(void) {
