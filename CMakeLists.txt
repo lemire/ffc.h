@@ -48,7 +48,10 @@ file(GLOB csv_files test_src/*.csv)
 file(COPY ${csv_files} DESTINATION ${CMAKE_BINARY_DIR}/test_src/)
 
 add_executable(test_runner test_src/test.c)
-target_compile_definitions(test_runner PRIVATE FFC_IMPL)
+target_compile_definitions(test_runner PRIVATE FFC_IMPL
+    $<$<NOT:$<BOOL:${WIN32}>>:_POSIX_C_SOURCE=200809L _DEFAULT_SOURCE>)
+target_compile_options(test_runner PRIVATE
+    $<$<C_COMPILER_ID:MSVC>:/experimental:c11atomics>)
 target_include_directories(test_runner PRIVATE . test_src)
 target_link_libraries(test_runner PRIVATE m)
 
@@ -63,7 +66,10 @@ add_test(NAME test_int_runner COMMAND test_int_runner)
 
 # Tests using src/ headers
 add_executable(test_runner_src test_src/test.c)
-target_compile_definitions(test_runner_src PRIVATE FFC_IMPL)
+target_compile_definitions(test_runner_src PRIVATE FFC_IMPL
+    $<$<NOT:$<BOOL:${WIN32}>>:_POSIX_C_SOURCE=200809L _DEFAULT_SOURCE>)
+target_compile_options(test_runner_src PRIVATE
+    $<$<C_COMPILER_ID:MSVC>:/experimental:c11atomics>)
 target_include_directories(test_runner_src PRIVATE test_src)
 target_link_libraries(test_runner_src PRIVATE ffc_src m)
 
