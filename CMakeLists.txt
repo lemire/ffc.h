@@ -60,7 +60,7 @@ endif()
 add_executable(test_int_runner test_src/test_int.c)
 target_compile_definitions(test_int_runner PRIVATE FFC_IMPL)
 target_include_directories(test_int_runner PRIVATE . test_src)
-target_link_libraries(test_int_runner PRIVATE m)
+target_link_libraries(test_int_runner PRIVATE $<$<NOT:$<C_COMPILER_ID:MSVC>>:m>)
 
 add_test(NAME test_int_runner COMMAND test_int_runner)
 
@@ -78,7 +78,7 @@ endif()
 add_executable(test_int_runner_src test_src/test_int.c)
 target_compile_definitions(test_int_runner_src PRIVATE FFC_IMPL)
 target_include_directories(test_int_runner_src PRIVATE test_src)
-target_link_libraries(test_int_runner_src PRIVATE ffc_src m)
+target_link_libraries(test_int_runner_src PRIVATE ffc_src $<$<NOT:$<C_COMPILER_ID:MSVC>>:m>)
 
 add_test(NAME test_int_runner_src COMMAND test_int_runner_src)
 
@@ -100,7 +100,7 @@ target_compile_definitions(supplemental-data INTERFACE SUPPLEMENTAL_TEST_DATA_DI
 # Supplemental tests
 add_executable(supplemental_tests test_src/supplemental_tests.c)
 target_include_directories(supplemental_tests PRIVATE . test_src)
-target_link_libraries(supplemental_tests PRIVATE m supplemental-data)
+target_link_libraries(supplemental_tests PRIVATE $<$<NOT:$<C_COMPILER_ID:MSVC>>:m> supplemental-data)
 target_compile_definitions(supplemental_tests PRIVATE FFC_IMPL)
 
 add_test(NAME supplemental_tests COMMAND supplemental_tests)
@@ -108,7 +108,7 @@ add_test(NAME supplemental_tests COMMAND supplemental_tests)
 # Supplemental tests using src/ headers
 add_executable(supplemental_tests_src test_src/supplemental_tests.c)
 target_include_directories(supplemental_tests_src PRIVATE src/ test_src)
-target_link_libraries(supplemental_tests_src PRIVATE m supplemental-data)
+target_link_libraries(supplemental_tests_src PRIVATE $<$<NOT:$<C_COMPILER_ID:MSVC>>:m> supplemental-data)
 target_compile_definitions(supplemental_tests_src PRIVATE FFC_IMPL)
 
 add_test(NAME supplemental_tests_src COMMAND supplemental_tests_src)
