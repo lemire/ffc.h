@@ -4,10 +4,14 @@
 #include <string.h>
 #include <fenv.h>
 #include <stdint.h>
-#include <dirent.h>
-#include <sys/stat.h>
 #include <errno.h>
 #include <time.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <dirent.h>
+#include <sys/stat.h>
+#endif
 
 const char* round_name(int d) {
     switch (d) {
@@ -114,15 +118,36 @@ int check_file(const char* file_name) {
 }
 
 int main(void) {
+    int all_passed = 1;
+#ifdef _WIN32
+    char search_path[1024];
+    snprintf(search_path, sizeof(search_path), "%s\\*", SUPPLEMENTAL_TEST_DATA_DIR);
+    WIN32_FIND_DATAA ffd;
+    HANDLE hFind = FindFirstFileA(search_path, &ffd);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        fprintf(stderr, "Could not open directory %s\n", SUPPLEMENTAL_TEST_DATA_DIR);
+        return 1;
+    }
+    do {
+        if (ffd.cFileName[0] == '.') continue;
+        if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+        char file_path[1024];
+        snprintf(file_path, sizeof(file_path), "%s\\%s", SUPPLEMENTAL_TEST_DATA_DIR, ffd.cFileName);
+        printf("Testing file: %s\n", file_path);
+        if (!check_file(file_path)) {
+            all_passed = 0;
+        }
+    } while (FindNextFileA(hFind, &ffd) != 0);
+    FindClose(hFind);
+#else
     DIR* dir = opendir(SUPPLEMENTAL_TEST_DATA_DIR);
     if (!dir) {
         fprintf(stderr, "Could not open directory %s: %s\n", SUPPLEMENTAL_TEST_DATA_DIR, strerror(errno));
         return 1;
     }
     struct dirent* entry;
-    int all_passed = 1;
     while ((entry = readdir(dir)) != NULL) {
-        if (entry->d_name[0] == '.') continue; // skip hidden
+        if (entry->d_name[0] == '.') continue;
         char file_path[1024];
         snprintf(file_path, sizeof(file_path), "%s/%s", SUPPLEMENTAL_TEST_DATA_DIR, entry->d_name);
         struct stat st;
@@ -134,5 +159,6 @@ int main(void) {
         }
     }
     closedir(dir);
+#endif
     return all_passed ? EXIT_SUCCESS : EXIT_FAILURE;
 }
